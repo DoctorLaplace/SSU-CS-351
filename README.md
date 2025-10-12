@@ -18,23 +18,6 @@ Yes, there was a clear trend. As the size of the data in each Node increased, th
 
 Similar to the data size, there was a direct correlation between the length of the block chain (the number of nodes) and the execution time. A longer block chain means more nodes to allocate, initialize, and process (hash). This increases the total number of memory allocation operations and the total amount of data to be hashed, leading to a linear increase in execution time. This trend was consistent across all four programs.
 
-### Node Diagram (for malloc.cpp/alloca.cpp with 6 bytes of data)
-
-Below is a textual representation of the memory layout for two connected `Node` objects.
-
-
-head ----> [Node 1]
-             |
-             +---------------- next* --------------+     tail ---+ 
-             |                                       |             |
-             |       [Node 2] <--------------------+             |
-             |          |                                            |
-             |          +---------------- next* ----> NULL               |
-             |          |                                            |
-             |          +---------------- bytes* ----> [ 6 bytes data ]    |
-             |                                                       |
-             +---------------- bytes* ----> [ 6 bytes data ] <----------+
-
 ### Structure of a Single Node (allocating 6 bytes)
 
 A single `Node` object itself contains two pointers. On a 64-bit system, each pointer is 8 bytes.

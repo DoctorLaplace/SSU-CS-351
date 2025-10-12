@@ -60,3 +60,19 @@ Memory Address | Content
 
 As the size of data in a Node increases, the **significance of the allocation overhead decreases** relative to the total time spent per node. While the time to allocate memory does increase slightly with larger sizes, the time spent initializing and processing (hashing) that memory grows much more significantly. For very small nodes, the constant-time overhead of the allocation function (`malloc`, `new`, etc.) can be a substantial portion of the total work. However, when the node data is large (e.g., several kilobytes), the time taken to iterate over and hash thousands of bytes far outweighs the initial cost of the allocation call. Therefore, the allocation cost becomes a less significant bottleneck in the overall performance.
 
+
+### Extra Credit Challenge
+
+For the extra credit challenge, I focused on optimizing the \`malloc.cpp\` version of the program.
+
+**Compiler Options Used:**
+
+OPT=\-O3 -march=native -flto\n
+- \`-O3\`: Enables the highest level of optimization.
+- \`-march=native\`: Allows the compiler to generate code optimized for the specific CPU architecture of the build machine.
+- \`-flto\`: Enables link-time optimization, allowing for further optimizations across compilation units.
+
+**My Fastest Time:**
+
+With the parameters \`MIN_BYTES=100\`, \`MAX_BYTES=1000\`, and \`NUM_BLOCKS=10000000\`, my optimized \`malloc.cpp\` achieved an average execution time of **1.85 seconds**.
+

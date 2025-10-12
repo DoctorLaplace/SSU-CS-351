@@ -31,12 +31,19 @@ The `bytes` pointer points to a separate block of memory on the heap (for `mallo
 
 Memory Address | Content
 --------------------------
+
 0x2000         | data byte 0
+
 0x2001         | data byte 1
+
 0x2002         | data byte 2
+
 0x2003         | data byte 3
+
 0x2004         | data byte 4
+
 0x2005         | data byte 5
+
 
 
 ### As the size of data in a Node increases, does the significance of allocating the node increase or decrease?

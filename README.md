@@ -24,10 +24,10 @@ What's noticeable about heap breaks (the `brk()` system call) is that they direc
 
 ### Considering either the malloc.cpp or alloca.cpp versions of the program, generate a diagram showing two Nodes.
 
-Here is a diagram for `malloc.cpp` showing two nodes, each with 6 bytes of data. On a 64-bit system, pointers are 8 bytes.
+The diagram for `malloc.cpp` showing two nodes, each with 6 bytes of data. On a 64-bit system, pointers are 8 bytes.
 
-
-// Pointers in the main function
+```text
+Pointers in the main function:
 head -> [Node 1 @ 0x1000]
 tail -> [Node 2 @ 0x2000]
 
@@ -43,6 +43,7 @@ tail -> [Node 2 @ 0x2000]
             +-------------+                +-------------+
             | 6 bytes     |                | 6 bytes     |
             +-------------+                +-------------+
+```
 
 
 - **Head/Tail/Next:** The `head` pointer holds the address of the first node (`0x1000`). The first node's `next` pointer holds the address of the second node (`0x2000`). The `tail` pointer also holds the address of the second (last) node. The second node's `next` pointer is `NULL`, indicating the end of the list.

@@ -24,7 +24,9 @@ A single `Node` object itself contains two pointers. On a 64-bit system, each po
 
 Memory Address | Field      | Size    | Points To
 ----------------------------------------------------------------
+
 0x1000         | next       | 8 bytes | Address of the next Node (e.g., 0x1010)
+
 0x1008         | bytes      | 8 bytes | Address of the allocated data block (e.g., 0x2000)
 
 The `bytes` pointer points to a separate block of memory on the heap (for `malloc`) or stack (for `alloca`).

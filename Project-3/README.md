@@ -4,8 +4,7 @@ This project demonstrates procedural shape generation using WebGL vertex and fra
 
 ## Versions
 
-### [![Wireframe Triangle](v1-triangle.html)](v1-triangle.html)
-**Version 1: Wireframe Triangle**
+### [Version 1: Wireframe Triangle](v1-triangle.html)
 
 A simple equilateral triangle created procedurally using trigonometry in the vertex shader. Rendered as a yellow line loop.
 
@@ -14,37 +13,39 @@ A simple equilateral triangle created procedurally using trigonometry in the ver
 - Computing vertex positions using `cos()` and `sin()`
 - Fragment shader with flat color
 
+![Wireframe Triangle](r1.png)
+
 ---
 
-### [![10-Sided Polygon](v2-polygon.html)](v2-polygon.html)
-**Version 2: 10-Sided Filled Polygon**
+### [Version 2: 10-Sided Filled Polygon](v2-polygon.html)
 
 A filled 10-sided polygon created using a triangle fan primitive.
 
 **Key Concepts:**
 - Triangle fan rendering (`gl.TRIANGLE_FAN`)
-- Uniform variables to pass data to shaders
-- Scaling vertex count with the `N` uniform
+- Procedural vertex generation for N-sided shapes
+- Angle calculation for even distribution
+
+![10-Sided Polygon](r2.png)
 
 ---
 
-###  [![Five-Pointed Star](star_screenshot.png)](v3-star.html)
-**Version 3: Five-Pointed Star**
+### [Version 3: Five-Pointed Star](v3-star.html)
 
 A classic five-pointed star created by modulating vertex radius based on even/odd vertex IDs.
 
 **Key Concepts:**
 - Radius modulation based on vertex ID
-- Even vertices at full radius (outer points)
-- Odd vertices at reduced radius (inner points, 0.4)
+- Using `mod()` function for even/odd detection
+- Odd vertices at full radius (outer points)
+- Even vertices at reduced radius (inner points, 0.4)
 - Explicit handling of center vertex
 
-![Star Screenshot](star_screenshot.png)
+![Five-Pointed Star](r3.png)
 
 ---
 
-### [![Rotating Star](rotating_star_screenshot.png)](v4-rotating-star.html)
-**Version 4: Rotating Star**
+### [Version 4: Rotating Star](v4-rotating-star.html)
 
 The five-pointed star now rotates continuously using animation.
 
@@ -53,12 +54,11 @@ The five-pointed star now rotates continuously using animation.
 - Time uniform variable (`t`) passed to shader
 - Incorporating time into angle computation for rotation
 
-![Rotating Star Screenshot](rotating_star_screenshot.png)
+![Rotating Star](r4.png)
 
 ---
 
-### [![Colored Rotating Star](colored_star_screenshot.png)](v5-colored-star.html)
-**Version 5: Colored Rotating Star (Extra Credit)**
+### [Version 5: Colored Rotating Star (Extra Credit)](v5-colored-star.html)
 
 The rotating star with beautiful color interpolation from gold center to deep red edges.
 
@@ -67,7 +67,7 @@ The rotating star with beautiful color interpolation from gold center to deep re
 - Color interpolation using `mix()` function
 - Radius-based color gradient
 
-![Colored Star Screenshot](colored_star_screenshot.png)
+![Colored Rotating Star](r5.png)
 
 ---
 
@@ -79,7 +79,7 @@ The rotating star with beautiful color interpolation from gold center to deep re
 
 ### Progressive Development
 Each version adds new concepts while maintaining the foundation:
-1. Basic procedural geometry → 2. Uniform variables → 3. Conditional logic → 4. Animation → 5. Inter-shader communication
+1. Basic procedural geometry → 2. Filled shapes → 3. Conditional logic → 4. Animation → 5. Inter-shader communication
 
 ## Files
 - `initShaders.js` - Helper function for compiling and linking shaders

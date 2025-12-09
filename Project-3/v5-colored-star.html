@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL - Colored Rotating Star (Extra Credit)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #808080;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="512" height="512">
+        Your browser doesn't support HTML5 canvas
+    </canvas>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
+        
+        uniform float N;
+        uniform float t;
+        
+        out float radius;
+        
+        void main() {
+            // Handle center vertex
+            if (gl_VertexID == 0) {
+                gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+                radius = 0.0;
+                return;
+            }
+            
+            const float Pi = 3.14159265358979;
+            
+            // Determine radius based on even/odd vertex ID
+            radius = (gl_VertexID % 2 == 0) ? 1.0 : 0.4;
+            
+            float vid = float(gl_VertexID);
+            // Add time to angle for rotation
+            float angle = vid * 2.0 * Pi / N + t;
+            
+            vec2 v = radius * vec2(cos(angle), sin(angle));
+            gl_Position = vec4(v, 0.0, 1.0);
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
+        precision mediump float;
+        
+        in float radius;
+        out vec4 fColor;
+        
+        void main() {
+            // Interpolate between gold (center) and deep red (edges)
+            const vec4 gold = vec4(1.0, 0.84, 0.0, 1.0);
+            const vec4 deepRed = vec4(0.8, 0.0, 0.2, 1.0);
+            
+            fColor = mix(gold, deepRed, radius);
+        }
+    </script>
+
+    <script src="initShaders.js"></script>
+    <script>
+        const canvas = document.getElementById('gl-canvas');
+        const gl = canvas.getContext('webgl2');
+
+        if (!gl) {
+            alert('WebGL 2.0 not available');
+        }
+
+        const program = initShaders(gl, 'vertex-shader', 'fragment-shader');
+        gl.useProgram(program);
+
+        // Set up uniform for number of vertices
+        const N = 11;
+        const uN = gl.getUniformLocation(program, 'N');
+        gl.uniform1f(uN, N);
+
+        // Set up uniform for time/rotation
+        const ut = gl.getUniformLocation(program, 't');
+
+        // Create a Vertex Array Object
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+
+        // Animation loop
+        let t = 0.0;
+        function render() {
+            // Update time
+            t += 0.01;
+            gl.uniform1f(ut, t);
+
+            // Clear the canvas
+            gl.clearColor(0.5, 0.5, 0.5, 1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // Draw the star
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, N);
+
+            requestAnimationFrame(render);
+        }
+
+        render();
+    </script>
+</body>
+
+</html>

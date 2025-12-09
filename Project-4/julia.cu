@@ -38,13 +38,47 @@ __device__ void setColor(unsigned char* pixel, int iterations, int maxIterations
         pixel[1] = 0;
         pixel[2] = 0;
     } else {
-        // Inverted gradient - points that escape quickly are bright
+        // Rainbow gradient based on iterations
         float t = static_cast<float>(iterations) / maxIterations;
-        // Use 1.0 - t to invert (quick escape = bright)
-        float brightness = 1.0f - t;
-        pixel[0] = static_cast<unsigned char>(brightness * 50);   // Red
-        pixel[1] = static_cast<unsigned char>(brightness * 150);  // Green  
-        pixel[2] = static_cast<unsigned char>(brightness * 255);  // Blue
+        
+        // Create smooth rainbow: Red -> Orange -> Yellow -> Green -> Cyan -> Blue -> Purple
+        float r, g, b;
+        
+        if (t < 0.16f) {
+            // Red to Orange
+            r = 1.0f;
+            g = t / 0.16f;
+            b = 0.0f;
+        } else if (t < 0.33f) {
+            // Orange to Yellow
+            r = 1.0f;
+            g = 1.0f;
+            b = 0.0f;
+        } else if (t < 0.5f) {
+            // Yellow to Green
+            r = 1.0f - (t - 0.33f) / 0.17f;
+            g = 1.0f;
+            b = 0.0f;
+        } else if (t < 0.66f) {
+            // Green to Cyan
+            r = 0.0f;
+            g = 1.0f;
+            b = (t - 0.5f) / 0.16f;
+        } else if (t < 0.83f) {
+            // Cyan to Blue
+            r = 0.0f;
+            g = 1.0f - (t - 0.66f) / 0.17f;
+            b = 1.0f;
+        } else {
+            // Blue to Purple
+            r = (t - 0.83f) / 0.17f;
+            g = 0.0f;
+            b = 1.0f;
+        }
+        
+        pixel[0] = static_cast<unsigned char>(r * 255);
+        pixel[1] = static_cast<unsigned char>(g * 255);
+        pixel[2] = static_cast<unsigned char>(b * 255);
     }
 }
 
@@ -84,6 +118,7 @@ void generateJuliaSet(int width, int height, unsigned char* image,
     unsigned char* d_image;
     size_t imageSize = width * height * 3;
     CUDA_CHECK_CALL(cudaMalloc(&d_image, imageSize));
+    CUDA_CHECK_CALL(cudaMemset(d_image, 0, imageSize));  // Initialize to zero
     
     // Configure 2D grid
     dim3 threadsPerBlock(16, 16);
@@ -118,15 +153,14 @@ void writePPM(const char* filename, int width, int height, unsigned char* image)
 int main() {
     const int width = 800;
     const int height = 800;
-    const int maxIterations = 256;
+    const int maxIterations = 100;  // Reduced for more color variation
     
-    // Mandelbrot set: c = (0, 0)
-    // Try other values for different Julia sets, e.g., c = (0.355, 0.355)
-    Complex c(0.0f, 0.0f);
+    // Julia set with interesting structure
+    Complex c(-0.7f, 0.27015f);
     
     // Viewing window in complex plane
-    Complex ll(-2.0f, -2.0f);  // lower left
-    Complex ur(2.0f, 2.0f);    // upper right
+    Complex ll(-1.5f, -1.5f);  // lower left
+    Complex ur(1.5f, 1.5f);    // upper right
     
     // Allocate image buffer
     unsigned char* image = new unsigned char[width * height * 3];

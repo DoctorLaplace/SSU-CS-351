@@ -17,11 +17,11 @@ Parallel implementation of the `std::iota` function that fills an array with seq
 ### Implementation
 
 **CPU Version (`iota.cpp`):**
-```cpp
+cpp
 for (size_t i = 0; i < n; ++i) {
     values[i] = i + startValue;
 }
-```
+
 
 **CUDA Version (`iota.cu`):**
 - Each GPU thread processes one array element
@@ -77,7 +77,7 @@ Generates fractal images by iterating complex-valued functions in parallel on th
 
 For each pixel (x, y):
 1. Map to complex number z in the viewing window
-2. Iterate: z ← z² + c
+2. Iterate: z = z*z + c
 3. Count iterations until |z| > 2.0 or max iterations reached
 4. Color pixel based on iteration count
 
@@ -93,11 +93,11 @@ For each pixel (x, y):
 ![Mandelbrot Set](julia.png)
 
 **Parameters:**
-- Starting point: c = 0.0 + 0.0i (Mandelbrot set)
-- Viewing window: [-2.0, 2.0] × [-2.0, 2.0]
-- Max iterations: 256
-- Resolution: 800×800 pixels
-- Color scheme: Black (in set) to blue gradient (escaped)
+- Starting point: c = -0.7 + 0.27015i
+- Viewing window: [-1.5, 1.5] x [-1.5, 1.5]
+- Max iterations: 100
+- Resolution: 800x800 pixels
+- Color scheme: Rainbow gradient (Red -> Purple)
 
 ### Why CUDA Excels Here
 
@@ -118,36 +118,36 @@ Unlike iota, Julia set generation is **ideal for CUDA**:
 ## Building and Running
 
 ### Compile
-```bash
+bash
 make              # Build all programs
 make iota.cpu iota.gpu
 make julia.cpu julia.gpu
-```
+
 
 ### Run Iota Tests
-```bash
+bash
 ./iota.cpu
 ./iota.gpu
-```
+
 
 ### Performance Trials
-```bash
+bash
 ./runTrials.sh ./iota.cpu
 ./runTrials.sh ./iota.gpu
-```
+
 
 ### Generate Julia Set
-```bash
+bash
 ./julia.gpu       # Creates julia.ppm
-```
+
 
 ### View Image
-```bash
+bash
 # Convert PPM to PNG (optional)
 convert julia.ppm julia.png
 
 # Or view directly if viewer supports PPM
-```
+
 
 ---
 
@@ -158,40 +158,3 @@ convert julia.ppm julia.png
 - `CudaCheck.h` - CUDA error checking utilities
 - `Makefile` - Build system
 - `runTrials.sh` - Performance testing script
-
----
-
-## Transferring Files from Oblivus
-
-```bash
-# Copy from server to local repository
-scp <user>@185.141.218.169:~/Project-4/julia.ppm ./Project-4/
-scp <user>@185.141.218.169:~/Project-4/*.cu ./Project-4/
-```
-
----
-
-## Optional Explorations
-
-### Different Julia Sets
-Change `c` value in `julia.cu`:
-```cpp
-Complex c(0.355f, 0.355f);  // Different Julia set
-Complex c(-0.7f, 0.27f);    // Another interesting one
-```
-
-### Custom Color Maps
-Modify `setColor()` function for different palettes:
-```cpp
-// Rainbow gradient
-pixel[0] = static_cast<unsigned char>(255 * iterations / maxIterations);
-pixel[1] = static_cast<unsigned char>(128);
-pixel[2] = static_cast<unsigned char>(255 * (1.0 - iterations / maxIterations));
-```
-
-### Different Viewing Windows
-Zoom into interesting regions:
-```cpp
-Complex ll(-0.5f, -0.5f);  // Zoom in to center
-Complex ur(0.5f, 0.5f);
-```

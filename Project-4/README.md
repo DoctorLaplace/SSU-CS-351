@@ -146,8 +146,6 @@ bash
 # Convert PPM to PNG (optional)
 convert julia.ppm julia.png
 
-# Or view directly if viewer supports PPM
-
 
 ---
 

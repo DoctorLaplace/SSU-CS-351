@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebGL Test - Star Debug</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+            font-family: monospace;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            background-color: #808080;
+            border: 2px solid #fff;
+        }
+
+        #debug {
+            color: #fff;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="512" height="512">
+        Your browser doesn't support HTML5 canvas
+    </canvas>
+    <div id="debug"></div>
+
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        #version 300 es
+        
+        uniform float N;
+        
+        void main() {
+            // Handle center vertex
+            if (gl_VertexID == 0) {
+                gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+                return;
+            }
+            
+            const float Pi = 3.14159265358979;
+            
+            // Determine radius based on even/odd vertex ID
+            float radius = (gl_VertexID % 2 == 0) ? 1.0 : 0.4;
+            
+            float vid = float(gl_VertexID);
+            float angle = vid * 2.0 * Pi / N;
+            
+            vec2 v = radius * vec2(cos(angle), sin(angle));
+            gl_Position = vec4(v, 0.0, 1.0);
+        }
+    </script>
+
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        #version 300 es
+        precision mediump float;
+        
+        out vec4 fColor;
+        
+        void main() {
+            fColor = vec4(1.0, 1.0, 0.0, 1.0);  // Yellow
+        }
+    </script>
+
+    <script src="initShaders.js"></script>
+    <script>
+        function log(msg) {
+            const debug = document.getElementById('debug');
+            debug.innerHTML += msg + '<br>';
+            console.log(msg);
+        }
+
+        log('Starting WebGL initialization...');
+
+        const canvas = document.getElementById('gl-canvas');
+        const gl = canvas.getContext('webgl2');
+
+        if (!gl) {
+            log('ERROR: WebGL 2.0 not available!');
+            alert('WebGL 2.0 not available');
+        } else {
+            log('✓ WebGL 2.0 context created');
+        }
+
+        const program = initShaders(gl, 'vertex-shader', 'fragment-shader');
+        if (!program) {
+            log('ERROR: Shader program compilation failed!');
+        } else {
+            log('✓ Shaders compiled successfully');
+        }
+
+        gl.useProgram(program);
+        log('✓ Program in use');
+
+        // Set up uniform for number of vertices
+        const N = 11;
+        const uN = gl.getUniformLocation(program, 'N');
+        gl.uniform1f(uN, N);
+        log(`✓ Uniform N set to ${N}`);
+
+        // Create a Vertex Array Object
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+        log('✓ VAO created and bound');
+
+        // Clear the canvas
+        gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        log('✓ Canvas cleared');
+
+        // Draw as a triangle fan
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, N);
+        log(`✓ Draw call made (${N} vertices)`);
+
+        const error = gl.getError();
+        if (error !== gl.NO_ERROR) {
+            log(`ERROR: WebGL error code: ${error}`);
+        } else {
+            log('✓ No WebGL errors - star should be visible!');
+        }
+    </script>
+</body>
+
+</html>

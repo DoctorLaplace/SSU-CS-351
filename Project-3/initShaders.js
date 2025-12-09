@@ -5,7 +5,9 @@ function initShaders(gl, vertexShaderId, fragmentShaderId) {
     const compileShader = (gl, shaderId, shaderType) => {
         const shaderScript = document.getElementById(shaderId);
         if (!shaderScript) {
-            console.error(`Shader script with id '${shaderId}' not found`);
+            const error = `Shader script with id '${shaderId}' not found`;
+            console.error(error);
+            alert(error);
             return null;
         }
 
@@ -14,7 +16,9 @@ function initShaders(gl, vertexShaderId, fragmentShaderId) {
         gl.compileShader(shader);
 
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-            console.error(`Shader compilation error in ${shaderId}:`, gl.getShaderInfoLog(shader));
+            const error = gl.getShaderInfoLog(shader);
+            console.error(`Shader compilation error in ${shaderId}:`, error);
+            alert(`Shader compilation error in ${shaderId}:\n${error}`);
             return null;
         }
 
@@ -34,7 +38,9 @@ function initShaders(gl, vertexShaderId, fragmentShaderId) {
     gl.linkProgram(program);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error('Shader program linking error:', gl.getProgramInfoLog(program));
+        const error = gl.getProgramInfoLog(program);
+        console.error('Shader program linking error:', error);
+        alert(`Shader program linking error:\n${error}`);
         return null;
     }
 

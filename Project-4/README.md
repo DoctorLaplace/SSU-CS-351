@@ -90,7 +90,7 @@ For each pixel (x, y):
 
 ### Generated Image
 
-![Mandelbrot Set](julia.ppm)
+![Mandelbrot Set](julia.png)
 
 **Parameters:**
 - Starting point: c = 0.0 + 0.0i (Mandelbrot set)

@@ -38,11 +38,13 @@ __device__ void setColor(unsigned char* pixel, int iterations, int maxIterations
         pixel[1] = 0;
         pixel[2] = 0;
     } else {
-        // Blue gradient based on iterations
+        // Inverted gradient - points that escape quickly are bright
         float t = static_cast<float>(iterations) / maxIterations;
-        pixel[0] = static_cast<unsigned char>(0);
-        pixel[1] = static_cast<unsigned char>(0);
-        pixel[2] = static_cast<unsigned char>(255 * t);
+        // Use 1.0 - t to invert (quick escape = bright)
+        float brightness = 1.0f - t;
+        pixel[0] = static_cast<unsigned char>(brightness * 50);   // Red
+        pixel[1] = static_cast<unsigned char>(brightness * 150);  // Green  
+        pixel[2] = static_cast<unsigned char>(brightness * 255);  // Blue
     }
 }
 

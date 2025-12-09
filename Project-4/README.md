@@ -97,7 +97,7 @@ For each pixel (x, y):
 - Viewing window: [-1.5, 1.5] x [-1.5, 1.5]
 - Max iterations: 100
 - Resolution: 800x800 pixels
-- Color scheme: Gradient (Inner: Orange -> Yellow -> Green -> Blue -> Outer: Violet -> Black)
+- Color scheme: Neon Cold (Inner: White -> Cyan -> Violet -> Outer: Black)
 
 ### Why CUDA Excels Here
 

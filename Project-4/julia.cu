@@ -40,42 +40,36 @@ __device__ void mixColors(float t, float r1, float g1, float b1, float r2, float
 // Set pixel color based on iteration count
 __device__ void setColor(unsigned char* pixel, int iterations, int maxIterations) {
     if (iterations == maxIterations) {
-        // Point is in the set - black
-        pixel[0] = 0;
-        pixel[1] = 0;
-        pixel[2] = 0;
+        // Point is in the set - White
+        pixel[0] = 255;
+        pixel[1] = 255;
+        pixel[2] = 255;
     } else {
         // Normalized iteration count (0.0 to 1.0)
+        // t=1.0 is near the set (high iterations)
+        // t=0.0 is far from the set (low iterations)
         float t = static_cast<float>(iterations) / maxIterations;
         
-        // Desired Gradient (Outer/Low Iterations -> Inner/High Iterations):
-        // t=0.0: Black
-        // t=0.2: Violet
-        // t=0.4: Blue
-        // t=0.6: Green
-        // t=0.8: Yellow
-        // t=1.0: Orange
+        // Desired Gradient:
+        // Inner (High t) -> Outer (Low t)
+        // Cyan -> Violet -> Black
         
-        if (t < 0.2f) {
-            // Black to Violet (0,0,0) -> (148,0,211)
-            float localT = t / 0.2f;
-            mixColors(localT, 0.0f, 0.0f, 0.0f, 0.58f, 0.0f, 0.83f, pixel);
-        } else if (t < 0.4f) {
-            // Violet to Blue (0.58,0,0.83) -> (0,0,1)
-            float localT = (t - 0.2f) / 0.2f;
-            mixColors(localT, 0.58f, 0.0f, 0.83f, 0.0f, 0.0f, 1.0f, pixel);
-        } else if (t < 0.6f) {
-            // Blue to Green (0,0,1) -> (0,1,0)
-            float localT = (t - 0.4f) / 0.2f;
-            mixColors(localT, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, pixel);
-        } else if (t < 0.8f) {
-            // Green to Yellow (0,1,0) -> (1,1,0)
-            float localT = (t - 0.6f) / 0.2f;
-            mixColors(localT, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, pixel);
+        if (t > 0.5f) {
+            // Violet to Cyan
+            // t goes from 0.5 to 1.0
+            // map to 0.0 to 1.0
+            float localT = (t - 0.5f) / 0.5f;
+            
+            // Violet (0.5, 0, 1.0) -> Cyan (0, 1.0, 1.0)
+            mixColors(localT, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, pixel);
         } else {
-            // Yellow to Orange (1,1,0) -> (1, 0.65, 0)
-            float localT = (t - 0.8f) / 0.2f;
-            mixColors(localT, 1.0f, 1.0f, 0.0f, 1.0f, 0.65f, 0.0f, pixel);
+            // Black to Violet
+            // t goes from 0.0 to 0.5
+            // map to 0.0 to 1.0
+            float localT = t / 0.5f;
+            
+            // Black (0,0,0) -> Violet (0.5, 0, 1.0)
+            mixColors(localT, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 1.0f, pixel);
         }
     }
 }

@@ -30,6 +30,13 @@ inline __device__ float magnitude(const Complex& z) {
     return z.magnitude(); 
 }
 
+// Helper to mix colors linearly
+__device__ void mixColors(float t, float r1, float g1, float b1, float r2, float g2, float b2, unsigned char* pixel) {
+    pixel[0] = static_cast<unsigned char>((r1 + t * (r2 - r1)) * 255.0f);
+    pixel[1] = static_cast<unsigned char>((g1 + t * (g2 - g1)) * 255.0f);
+    pixel[2] = static_cast<unsigned char>((b1 + t * (b2 - b1)) * 255.0f);
+}
+
 // Set pixel color based on iteration count
 __device__ void setColor(unsigned char* pixel, int iterations, int maxIterations) {
     if (iterations == maxIterations) {
@@ -38,47 +45,38 @@ __device__ void setColor(unsigned char* pixel, int iterations, int maxIterations
         pixel[1] = 0;
         pixel[2] = 0;
     } else {
-        // Rainbow gradient based on iterations
+        // Normalized iteration count (0.0 to 1.0)
         float t = static_cast<float>(iterations) / maxIterations;
         
-        // Create smooth rainbow: Red -> Orange -> Yellow -> Green -> Cyan -> Blue -> Purple
-        float r, g, b;
+        // Desired Gradient (Outer/Low Iterations -> Inner/High Iterations):
+        // t=0.0: Black
+        // t=0.2: Violet
+        // t=0.4: Blue
+        // t=0.6: Green
+        // t=0.8: Yellow
+        // t=1.0: Orange
         
-        if (t < 0.16f) {
-            // Red to Orange
-            r = 1.0f;
-            g = t / 0.16f;
-            b = 0.0f;
-        } else if (t < 0.33f) {
-            // Orange to Yellow
-            r = 1.0f;
-            g = 1.0f;
-            b = 0.0f;
-        } else if (t < 0.5f) {
-            // Yellow to Green
-            r = 1.0f - (t - 0.33f) / 0.17f;
-            g = 1.0f;
-            b = 0.0f;
-        } else if (t < 0.66f) {
-            // Green to Cyan
-            r = 0.0f;
-            g = 1.0f;
-            b = (t - 0.5f) / 0.16f;
-        } else if (t < 0.83f) {
-            // Cyan to Blue
-            r = 0.0f;
-            g = 1.0f - (t - 0.66f) / 0.17f;
-            b = 1.0f;
+        if (t < 0.2f) {
+            // Black to Violet (0,0,0) -> (148,0,211)
+            float localT = t / 0.2f;
+            mixColors(localT, 0.0f, 0.0f, 0.0f, 0.58f, 0.0f, 0.83f, pixel);
+        } else if (t < 0.4f) {
+            // Violet to Blue (0.58,0,0.83) -> (0,0,1)
+            float localT = (t - 0.2f) / 0.2f;
+            mixColors(localT, 0.58f, 0.0f, 0.83f, 0.0f, 0.0f, 1.0f, pixel);
+        } else if (t < 0.6f) {
+            // Blue to Green (0,0,1) -> (0,1,0)
+            float localT = (t - 0.4f) / 0.2f;
+            mixColors(localT, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, pixel);
+        } else if (t < 0.8f) {
+            // Green to Yellow (0,1,0) -> (1,1,0)
+            float localT = (t - 0.6f) / 0.2f;
+            mixColors(localT, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, pixel);
         } else {
-            // Blue to Purple
-            r = (t - 0.83f) / 0.17f;
-            g = 0.0f;
-            b = 1.0f;
+            // Yellow to Orange (1,1,0) -> (1, 0.65, 0)
+            float localT = (t - 0.8f) / 0.2f;
+            mixColors(localT, 1.0f, 1.0f, 0.0f, 1.0f, 0.65f, 0.0f, pixel);
         }
-        
-        pixel[0] = static_cast<unsigned char>(r * 255);
-        pixel[1] = static_cast<unsigned char>(g * 255);
-        pixel[2] = static_cast<unsigned char>(b * 255);
     }
 }
 
@@ -153,7 +151,7 @@ void writePPM(const char* filename, int width, int height, unsigned char* image)
 int main() {
     const int width = 800;
     const int height = 800;
-    const int maxIterations = 100;  // Reduced for more color variation
+    const int maxIterations = 100;
     
     // Julia set with interesting structure
     Complex c(-0.7f, 0.27015f);
